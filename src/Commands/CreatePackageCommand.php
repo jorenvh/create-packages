@@ -11,19 +11,20 @@ class CreatePackageCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'make:package';
+    protected $signature = 'make:package
+        {name : The name of the package}
+        {vendorname? : Your vendor name (optional)}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Make basic folder structure for a new package.';
+    protected $description = 'Create a new package structure';
 
     /**
      * Create a new command instance.
      *
-     * @return void
      */
     public function __construct()
     {
