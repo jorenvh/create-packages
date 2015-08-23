@@ -8,5 +8,10 @@
             "email": "vanhochtjoren@gmail.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "files": [
+            "src/Helpers.php"
+        ]
+    }
 }

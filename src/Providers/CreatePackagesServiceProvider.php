@@ -24,6 +24,12 @@ class CreatePackagesServiceProvider extends ServiceProvider {
         $this->commands([
             'jorenvanhocht\CreatePackages\Commands\CreatePackageCommand',
         ]);
+
+        $this->publishes([
+            __DIR__.'/../../config' => config_path(),
+        ], 'config');
+
+        $this->mergeConfigFrom(__DIR__.'/../../config/createpackages.php', 'createpackages');
     }
 
 }
