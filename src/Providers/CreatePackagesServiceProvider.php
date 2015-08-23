@@ -21,7 +21,11 @@ class CreatePackagesServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
+        $this->publishes([
+            __DIR__.'/../../config' => config_path(),
+        ], 'config');
 
+        $this->mergeConfigFrom(__DIR__.'/../../config/createpackages.php', 'createpackages');
     }
 
 }
