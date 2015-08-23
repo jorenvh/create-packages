@@ -1,0 +1,12 @@
+{
+    "name": "jorenvanhocht/create-packages",
+    "description": "Laravel packages for quickly creating a new package base structure",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joren Van Hocht",
+            "email": "vanhochtjoren@gmail.com"
+        }
+    ],
+    "require": {}
+}
