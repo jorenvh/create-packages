@@ -68,17 +68,32 @@ class CreatePackageCommand extends Command
         $this->package = $this->argument('name');
         $this->vendor = $this->argument('vendorname');
         $this->createFolderStructure();
+
+        // create empty service provider
+        $this->createServiceProvider();
+        // create empty facade
+        // create empty package class
+
+        // return psr4 autoloading line for in composer.json file
+        // return service provider for in config/app.php
+        // return facade for in config/app.php
     }
 
     private function createFolderStructure()
     {
         $baseFolder = $this->config->folder;
         $vendorname = $this->getVendorName();
-        $fullPath = "$baseFolder/$vendorname/$this->package";
+        $basePath = "$baseFolder/$vendorname/$this->package";
 
-        $this->filesystem->makeDirectory($fullPath, 0755, true);
+        $this->filesystem->makeDirectory($basePath, 0755, true);
+        $this->filesystem->makeDirectory("$basePath/src", 0755, true);
+        $this->filesystem->makeDirectory("$basePath/tests", 0755, true);
+        $this->filesystem->makeDirectory("$basePath/Providers", 0755, true);
     }
 
+    /**
+     * @return string
+     */
     private function getVendorName()
     {
         if(! isset($this->vendor)) {
@@ -86,5 +101,15 @@ class CreatePackageCommand extends Command
         }
 
         return $this->vendor;
+    }
+
+    private function createServiceProvider()
+    {
+        $content = file_get_contents(__DIR__.'/../../templates/ServiceProvider.txt');
+        $content = str_replace('{{vendorname}}', $this->getVendorName(), $content);
+        $content = str_replace('{{packageName}}', ucfirst($this->package).'ServicePovider', $content);
+        $file = $this->config->folder.'/'.$this->getVendorName().'/'.$this->package.'/Providers/'.ucfirst($this->package).'ServiceProvider.php';
+
+        file_put_contents($file, $content);
     }
 }
