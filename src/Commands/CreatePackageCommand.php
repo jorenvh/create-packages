@@ -69,41 +69,38 @@ class CreatePackageCommand extends Command
         $this->vendor = $this->argument('vendorname');
         $this->createFolderStructure();
 
-        // create empty service provider
         $this->createServiceProvider();
-        // create empty facade
         $this->createFacade();
-        // create empty package class
         $this->createPackageClass();
 
-        $this->info('Folder structure and classes sucesfully created');
-        // return psr4 autoloading line for in composer.json file
-        $this->info('Add this line to the PRS-4 autoloading section in your composer.json file');
-        $this->info($this->getComposerJsonAutoloading());
-        // return service provider for in config/app.php
-        $this->info('');
-        $this->info('Add this line to the providers array in config/app.php');
-        $this->info($this->getServiceProvider());
-        // return facade for in config/app.php
-        $this->info('');
-        $this->info('Add this line to the aliases array in config/app.php');
-        $this->info($this->getFacade());
+       $this->returnOutput();
     }
 
+    /**
+     * Create the package directories
+     *
+     */
     private function createFolderStructure()
     {
         $baseFolder = $this->config->folder;
         $vendorname = $this->getVendorName();
         $basePath = "$baseFolder/$vendorname/$this->package";
 
-        $this->filesystem->makeDirectory($basePath, 0755, true);
-        $this->filesystem->makeDirectory("$basePath/src", 0755, true);
-        $this->filesystem->makeDirectory("$basePath/tests", 0755, true);
-        $this->filesystem->makeDirectory("$basePath/src/Providers", 0755, true);
-        $this->filesystem->makeDirectory("$basePath/src/Facades", 0755, true);
+        $this->filesystem
+            ->makeDirectory($basePath, 0755, true);
+        $this->filesystem
+            ->makeDirectory("$basePath/src", 0755, true);
+        $this->filesystem
+            ->makeDirectory("$basePath/tests", 0755, true);
+        $this->filesystem
+            ->makeDirectory("$basePath/src/Providers", 0755, true);
+        $this->filesystem
+            ->makeDirectory("$basePath/src/Facades", 0755, true);
     }
 
     /**
+     * Get the given vendor name
+     *
      * @return string
      */
     private function getVendorName()
@@ -115,49 +112,127 @@ class CreatePackageCommand extends Command
         return $this->vendor;
     }
 
+    /**
+     * Create the service provider class
+     *
+     */
     private function createServiceProvider()
     {
         $content = file_get_contents(__DIR__.'/../../templates/ServiceProvider.txt');
-        $content = str_replace('{{vendorname}}', $this->getVendorName(), $content);
-        $content = str_replace('{{packageName}}', ucfirst($this->package).'ServicePovider', $content);
-        $file = $this->config->folder.'/'.$this->getVendorName().'/'.$this->package.'/src/Providers/'.ucfirst($this->package).'ServiceProvider.php';
-
+        $content = $this->replaceNamespace($content, 'ServiceProvider');
+        $file = $this->getFilePath('Providers', 'ServiceProvider');
         file_put_contents($file, $content);
     }
 
+    /**
+     * Create the facade class
+     *
+     */
     private function createFacade()
     {
         $content = file_get_contents(__DIR__.'/../../templates/Facade.txt');
-        $content = str_replace('{{vendorname}}', $this->getVendorName(), $content);
-        $content = str_replace('{{packageName}}', ucfirst($this->package).'Facade', $content);
+        $content = $this->replaceNamespace($content, 'Facade');
         $content = str_replace('{{packageName2}}', strtolower($this->package), $content);
-        $file = $this->config->folder.'/'.$this->getVendorName().'/'.$this->package.'/src/Facades/'.ucfirst($this->package).'Facade.php';
-
+        $file = $this->getFilePath('Facades', 'Facade');
         file_put_contents($file, $content);
     }
 
+    /**
+     * Create the base package class
+     *
+     */
     private function createPackageClass()
     {
         $content = file_get_contents(__DIR__.'/../../templates/PackageClass.txt');
-        $content = str_replace('{{vendorname}}', $this->getVendorName(), $content);
-        $content = str_replace('{{packageName}}', ucfirst($this->package), $content);
-        $file = $this->config->folder.'/'.$this->getVendorName().'/'.$this->package.'/src/'.ucfirst($this->package).'.php';
-
+        $content = $this->replaceNamespace($content, '');
+        $file = $this->getFilePath('', '');
         file_put_contents($file, $content);
     }
 
+    /**
+     * Generate the psr4 autoloading line that needs to be added
+     * to the composer.json file of the project
+     *
+     * @return string
+     */
     private function getComposerJsonAutoloading()
     {
-        return '"'.$this->getVendorName().'\\\\'.ucfirst($this->package).'": "'.$this->config->folder.'/'.$this->getVendorName().'/'.$this->package.'/src/"';
+        return '"'.$this->getVendorName().'\\\\'.ucfirst($this->package).
+            '": "'.$this->config->folder.'/'.$this->getVendorName().'/'.
+            $this->package.'/src/"';
     }
 
+    /**
+     * Get the service provider that needs to be added to
+     * the config/app.php file
+     *
+     * @return string
+     */
     private function getServiceProvider()
     {
-        return $this->getVendorName().'\\'.ucfirst($this->package).'\Providers\\'.ucfirst($this->package).'ServiceProvider::class,';
+        return $this->getVendorName().'\\'.ucfirst($this->package).
+            '\Providers\\'.ucfirst($this->package).
+            'ServiceProvider::class,';
     }
 
+    /**
+     * Get the alias that needs to be added to
+     * the config/app.php file
+     *
+     * @return string
+     */
     private function getFacade()
     {
-        return $this->getVendorName().'\\'.ucfirst($this->package).'\Facades\\'.ucfirst($this->package).'Facade::class,';
+        return $this->getVendorName().'\\'.ucfirst($this->package).'\Facades\\'.
+            ucfirst($this->package).'Facade::class,';
+    }
+
+    /**
+     * Fill in the correct namespace in a template file
+     *
+     * @param $content
+     * @param $folder
+     * @return mixed
+     */
+    private function replaceNamespace($content, $folder)
+    {
+        $content = str_replace('{{vendorname}}', $this->getVendorName(), $content);
+        $content = str_replace('{{packageName}}', ucfirst($this->package). $folder , $content);
+
+        return $content;
+    }
+
+    /**
+     * Get the full path where the generated file needs to be placed
+     *
+     * @param $folder
+     * @param $suffix
+     * @return string
+     */
+    private function getFilePath($folder, $suffix)
+    {
+        return $this->config->folder.'/'.$this->getVendorName().'/'.
+            $this->package."/src/$folder/".ucfirst($this->package).
+            "$suffix.php";
+    }
+
+    /**
+     * Output info to the user
+     *
+     */
+    private function returnOutput()
+    {
+        $this->comment('Folder structure and classes sucesfully created');
+
+        $this->comment('Add this line to the PRS-4 autoloading section in your composer.json file');
+        $this->info($this->getComposerJsonAutoloading());
+
+        $this->info('');
+        $this->comment('Add this line to the providers array in config/app.php');
+        $this->info($this->getServiceProvider());
+
+        $this->info('');
+        $this->comment('Add this line to the aliases array in config/app.php');
+        $this->info($this->getFacade());
     }
 }
