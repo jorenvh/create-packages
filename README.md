@@ -9,13 +9,13 @@ is running the artisan command and start developing your package.
 You can install this package through composer by running the following command
 
 ```php
-    $ composer require jorenvanhocht\create-packages 1.0
+$ composer require jorenvanhocht\create-packages 1.0
 ```
 
 Now add the service provider to the provider array in ```config/app.php```
 
 ```php
-    jorenvanhocht\CreatePackages\Providers\CreatePackagesServiceProvider::class,
+jorenvanhocht\CreatePackages\Providers\CreatePackagesServiceProvider::class,
 ```
 
 ##Configuration
@@ -23,7 +23,7 @@ Now add the service provider to the provider array in ```config/app.php```
 Publish the config file by running the following command from your terminal
 
 ```php
-    $ php artisan vendor:publish
+$ php artisan vendor:publish
 ```
 
 Set your base folder and your vendor name, and you are good to go.
@@ -33,11 +33,11 @@ Set your base folder and your vendor name, and you are good to go.
 To create a new package run
 
 ```php
-    $ php artisan make:package yourPackageName
+$ php artisan make:package yourPackageName
 ```
 
 If want to create a package with a different vendor name then set in your config file you can add it as a parameter
 
 ```php
-    $ php artisan make:package yourPackageName YourNewVendorName
+$ php artisan make:package yourPackageName YourNewVendorName
 ```
