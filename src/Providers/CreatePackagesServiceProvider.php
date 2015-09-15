@@ -12,7 +12,7 @@ class CreatePackagesServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-
+        //
     }
 
     /**
@@ -21,6 +21,10 @@ class CreatePackagesServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
+        $this->commands([
+            'jorenvanhocht\CreatePackages\Commands\CreatePackageCommand',
+        ]);
+
         $this->publishes([
             __DIR__.'/../../config' => config_path(),
         ], 'config');

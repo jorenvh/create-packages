@@ -11,7 +11,7 @@ return [
      * The vendor name you want to use for your packages
      *
      */
-    'vendorname' => 'your-vendor-name',
+    'vendorname' => 'yourvendorname',
 
 
 ];
