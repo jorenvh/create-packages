@@ -41,3 +41,6 @@ If want to create a package with a different vendor name then set in your config
 ```php
 $ php artisan make:package yourPackageName YourNewVendorName
 ```
+
+#TODO
+Learn to write tests and write tests :)
